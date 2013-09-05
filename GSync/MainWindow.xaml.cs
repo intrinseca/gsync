@@ -36,17 +36,7 @@ namespace GSync
 
         private void btnCredentials_Click(object sender, RoutedEventArgs e)
         {
-            var cred = new CredentialsWindow();
-            cred.Owner = this;
-
-            cred.txtUsername.Text = Properties.Settings.Default.GoogleUsername;
-            cred.txtPassword.Password = Properties.Settings.Default.GooglePassword;
-
-            if (cred.ShowDialog() == true)
-            {
-                Properties.Settings.Default.GoogleUsername = cred.txtUsername.Text;
-                Properties.Settings.Default.GooglePassword = cred.txtPassword.Password;
-            }
+            var goo = new GoogleCalendar();
         }
     }
 }

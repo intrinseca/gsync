@@ -22,29 +22,5 @@ namespace GSync.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("michael@intrinseca.me.uk")]
-        public string GoogleUsername {
-            get {
-                return ((string)(this["GoogleUsername"]));
-            }
-            set {
-                this["GoogleUsername"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string GooglePassword {
-            get {
-                return ((string)(this["GooglePassword"]));
-            }
-            set {
-                this["GooglePassword"] = value;
-            }
-        }
     }
 }
