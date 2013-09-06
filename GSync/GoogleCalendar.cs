@@ -13,6 +13,7 @@ using Google.Apis.Util;
 
 using System.Diagnostics;
 using Google.Apis.Calendar.v3.Data;
+using System.Security.Cryptography;
 
 namespace GSync
 {
@@ -32,13 +33,17 @@ namespace GSync
     {
         private Func<Uri, string> authFunction;
         private CalendarService service;
+        private NativeApplicationClient provider;
+        private OAuth2Authenticator<NativeApplicationClient> auth;
+
+        private static byte[] aditionalEntropy = { 1, 2, 3, 4, 5 };
 
         public GoogleCalendar(Func<Uri, string> _authFunction)
         {
             authFunction = _authFunction;
 
-            var provider = new NativeApplicationClient(GoogleAuthenticationServer.Description, ClientCredentials.ClientID, ClientCredentials.ClientSecret);
-            var auth = new OAuth2Authenticator<NativeApplicationClient>(provider, getAuthorisation);
+            provider = new NativeApplicationClient(GoogleAuthenticationServer.Description, ClientCredentials.ClientID, ClientCredentials.ClientSecret);
+            auth = new OAuth2Authenticator<NativeApplicationClient>(provider, getAuthorisation);
 
             // Create the service.
             service = new CalendarService(new BaseClientService.Initializer()
@@ -66,21 +71,47 @@ namespace GSync
             e.Start = new EventDateTime() { DateTime = newEntry.Start.ToUniversalTime().ToString("O"), TimeZone="UTC" };
             e.End = new EventDateTime() { DateTime = newEntry.End.ToUniversalTime().ToString("O"), TimeZone = "UTC" };
             e.Summary = newEntry.Title;
-            e.Description = newEntry.Description;
+            e.Description = newEntry.Description + String.Format("\r\nOutlook ID:{0}", newEntry.UniqueID);
             e.Location = newEntry.Location;
 
             service.Events.Insert(e, calendarID).Execute();
         }
 
-        private IAuthorizationState getAuthorisation(NativeApplicationClient arg)
+        private IAuthorizationState getAuthorisation(NativeApplicationClient client)
         {
             IAuthorizationState state = new AuthorizationState(new[] { CalendarService.Scopes.Calendar.GetStringValue() });
             state.Callback = new Uri(NativeApplicationClient.OutOfBandCallbackUrl);
-            Uri authUri = arg.RequestUserAuthorization(state);
+
+            string refreshToken = LoadRefreshToken();
+            if (!String.IsNullOrWhiteSpace(refreshToken))
+            {
+                state.RefreshToken = refreshToken;
+
+                if (client.RefreshToken(state))
+                    return state;
+            }
+
+            Uri authUri = client.RequestUserAuthorization(state);
 
             string authResult = authFunction(authUri);
 
-            return arg.ProcessUserAuthorization(authResult, state);
+            var result = client.ProcessUserAuthorization(authResult, state);
+            StoreRefreshToken(state);
+            return result;
+        }
+
+        private static string LoadRefreshToken()
+        {
+            if (!String.IsNullOrWhiteSpace(Properties.Settings.Default.RefreshToken))
+                return Encoding.Unicode.GetString(ProtectedData.Unprotect(Convert.FromBase64String(Properties.Settings.Default.RefreshToken), aditionalEntropy, DataProtectionScope.CurrentUser));
+            else
+                return null;
+        }
+
+        private static void StoreRefreshToken(IAuthorizationState state)
+        {
+            Properties.Settings.Default.RefreshToken = Convert.ToBase64String(ProtectedData.Protect(Encoding.Unicode.GetBytes(state.RefreshToken), aditionalEntropy, DataProtectionScope.CurrentUser));
+            Properties.Settings.Default.Save();
         }
     }
 }
