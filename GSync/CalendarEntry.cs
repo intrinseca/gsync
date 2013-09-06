@@ -13,6 +13,15 @@ namespace GSync
         public string Title { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
+        public string UniqueID { get; set; }
+
+        public DateTime End
+        {
+            get
+            {
+                return Start + Duration;
+            }
+        }
 
         public static CalendarEntry FromOutlook(AppointmentItem i)
         {
@@ -22,6 +31,7 @@ namespace GSync
             e.Title = i.Subject;
             e.Location = i.Location;
             e.Description = i.Body;
+            e.UniqueID = i.EntryID;
 
             return e;
         }

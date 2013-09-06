@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DotNetOpenAuth.OAuth2;
+using Google.Apis.Authentication.OAuth2.DotNetOpenAuth;
 
 namespace GSync
 {
@@ -20,6 +22,7 @@ namespace GSync
     public partial class MainWindow : Window
     {
         OutlookReader outlook;
+        GoogleCalendar google;
 
         public MainWindow()
         {
@@ -27,16 +30,39 @@ namespace GSync
 
             outlook = new OutlookReader();
             lstItems.ItemsSource = outlook.Entries;
+
+            google = new GoogleCalendar(getAuthorization);
+        }
+
+        private string getAuthorization(Uri authUri)
+        {
+            AuthenticationWindow authWindow = new AuthenticationWindow();
+            authWindow.Browser.Navigate(authUri);
+            if (authWindow.ShowDialog() == true)
+            {
+                // Retrieve the access token by using the authorization code:
+                return authWindow.AuthResult;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void btnRefreshOutlook_Click(object sender, RoutedEventArgs e)
         {
             outlook.Refresh();
+
+            foreach (var entry in outlook.Entries)
+            {
+                google.AddEvent(entry, "intrinseca.me.uk_37m9th328t55luubdrqvlf6tdc@group.calendar.google.com");
+            }
         }
 
         private void btnCredentials_Click(object sender, RoutedEventArgs e)
         {
-            var goo = new GoogleCalendar();
+            lstItems.ItemsSource = google.GetCalendarList();
+            lstItems.DisplayMemberPath = "Summary";
         }
     }
 }
