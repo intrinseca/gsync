@@ -6,7 +6,7 @@ using Microsoft.Office.Interop.Outlook;
 
 namespace GSync
 {
-    class CalendarEntry
+    public class CalendarEntry
     {
         public DateTime Start { get; set; }
         public TimeSpan Duration { get; set; }

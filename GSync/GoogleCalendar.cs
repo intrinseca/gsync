@@ -29,7 +29,7 @@ namespace GSync
             : base(info, context) { }
     }
 
-    class GoogleCalendar
+    public class GoogleCalendar
     {
         private Func<Uri, string> authFunction;
         private CalendarService service;
@@ -37,11 +37,24 @@ namespace GSync
         private OAuth2Authenticator<NativeApplicationClient> auth;
 
         private static byte[] aditionalEntropy = { 1, 2, 3, 4, 5 };
+        private bool authRefreshOnly = true;
 
-        public GoogleCalendar(Func<Uri, string> _authFunction)
+        public bool Authenticated
         {
-            authFunction = _authFunction;
+            get
+            {
+                auth.LoadAccessToken();
+                return (auth.State != null);
+            }
+        }
 
+        public GoogleCalendar()
+        {
+            initialiseService();
+        }
+
+        private void initialiseService()
+        {
             provider = new NativeApplicationClient(GoogleAuthenticationServer.Description, ClientCredentials.ClientID, ClientCredentials.ClientSecret);
             auth = new OAuth2Authenticator<NativeApplicationClient>(provider, getAuthorisation);
 
@@ -53,8 +66,28 @@ namespace GSync
             });
         }
 
+        public void Authorise(Func<Uri, string> _authFunction)
+        {
+            authFunction = _authFunction;
+            authRefreshOnly = false;
+
+            auth.LoadAccessToken();
+
+            authRefreshOnly = true;
+            authFunction = null;
+        }
+
+        public void Deauthorise()
+        {
+            GoogleCalendar.DestroyRefreshToken();
+            initialiseService();
+        }
+
         public IList<CalendarListEntry> GetCalendarList()
         {
+            if (!Authenticated)
+                throw new GoogleCalendarException("Not Authenticated");
+
             try
             {
                 return service.CalendarList.List().Execute().Items;
@@ -67,6 +100,9 @@ namespace GSync
 
         public void AddEvent(CalendarEntry newEntry, string calendarID)
         {
+            if (!Authenticated)
+                throw new GoogleCalendarException("Not Authenticated");
+
             Event e = new Event();
             e.Start = new EventDateTime() { DateTime = newEntry.Start.ToUniversalTime().ToString("O"), TimeZone="UTC" };
             e.End = new EventDateTime() { DateTime = newEntry.End.ToUniversalTime().ToString("O"), TimeZone = "UTC" };
@@ -91,13 +127,20 @@ namespace GSync
                     return state;
             }
 
-            Uri authUri = client.RequestUserAuthorization(state);
+            if (!authRefreshOnly && authFunction != null)
+            {
+                Uri authUri = client.RequestUserAuthorization(state);
 
-            string authResult = authFunction(authUri);
+                string authResult = authFunction(authUri);
 
-            var result = client.ProcessUserAuthorization(authResult, state);
-            StoreRefreshToken(state);
-            return result;
+                var result = client.ProcessUserAuthorization(authResult, state);
+                StoreRefreshToken(state);
+                return result;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private static string LoadRefreshToken()
@@ -111,6 +154,12 @@ namespace GSync
         private static void StoreRefreshToken(IAuthorizationState state)
         {
             Properties.Settings.Default.RefreshToken = Convert.ToBase64String(ProtectedData.Protect(Encoding.Unicode.GetBytes(state.RefreshToken), aditionalEntropy, DataProtectionScope.CurrentUser));
+            Properties.Settings.Default.Save();
+        }
+
+        private static void DestroyRefreshToken()
+        {
+            Properties.Settings.Default.RefreshToken = null;
             Properties.Settings.Default.Save();
         }
     }

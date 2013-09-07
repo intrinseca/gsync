@@ -2,6 +2,11 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="3" />
+        </Style>
+    </Window.Resources>
     <Grid Margin="3">
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -10,9 +15,10 @@
 
         <ListBox Name="lstItems" Margin="3" />
 
-        <StackPanel Grid.Row="1" >
-            <Button Name="btnCredentials" Margin="3" Click="btnCredentials_Click">Update Google Details</Button>
-            <Button Name="btnRefreshOutlook" Click="btnRefreshOutlook_Click" Margin="3">Refresh Outlook</Button>
+        <StackPanel Grid.Row="1">
+            <Button Name="btnConfigure" Click="btnConfigure_Click">Configure</Button>
+            <Button Name="btnCredentials" Click="btnCredentials_Click">Update Google Details</Button>
+            <Button Name="btnRefreshOutlook" Click="btnRefreshOutlook_Click">Refresh Outlook</Button>
         </StackPanel>
     </Grid>
 </Window>

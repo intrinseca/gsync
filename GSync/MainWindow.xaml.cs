@@ -31,22 +31,7 @@ namespace GSync
             outlook = new OutlookReader();
             lstItems.ItemsSource = outlook.Entries;
 
-            google = new GoogleCalendar(getAuthorization);
-        }
-
-        private string getAuthorization(Uri authUri)
-        {
-            AuthenticationWindow authWindow = new AuthenticationWindow();
-            authWindow.Browser.Navigate(authUri);
-            if (authWindow.ShowDialog() == true)
-            {
-                // Retrieve the access token by using the authorization code:
-                return authWindow.AuthResult;
-            }
-            else
-            {
-                return null;
-            }
+            google = new GoogleCalendar();
         }
 
         private void btnRefreshOutlook_Click(object sender, RoutedEventArgs e)
@@ -63,6 +48,13 @@ namespace GSync
         {
             lstItems.ItemsSource = google.GetCalendarList();
             lstItems.DisplayMemberPath = "Summary";
+        }
+
+        private void btnConfigure_Click(object sender, RoutedEventArgs e)
+        {
+            var conf = new ConfigurationWindow(google);
+            conf.Owner = this;
+            conf.ShowDialog();
         }
     }
 }
