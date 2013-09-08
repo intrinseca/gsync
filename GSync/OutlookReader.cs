@@ -29,7 +29,7 @@ namespace GSync
             items.IncludeRecurrences = true;
 
             var startDate = DateTime.Today.AddMonths(-1);
-            var endDate = startDate.AddMonths(1);
+            var endDate = DateTime.Today.AddMonths(1);
 
             var currentEvent = items.Find(String.Format("[Start] >= \"{0:D}\" and [Start] <= \"{1:D}\"", startDate, endDate));
 
