@@ -1,10 +1,12 @@
 ﻿<Window x:Class="GSync.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+        Title="GSync Status" Height="392" Width="295" ResizeMode="CanMinimize" Icon="/GSync;component/Blue%20Cloud%20Sync.ico">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Margin" Value="3" />
+            <Setter Property="Height" Value="25" />
         </Style>
     </Window.Resources>
     <Grid Margin="3">
@@ -13,7 +15,10 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ListBox Name="lstItems" Margin="3" />
+        <Canvas Margin="15">
+            <Image Source="/GSync;component/1378655721_Synchronize.png" Height="72" Width="72" Canvas.Left="0" Canvas.Top="0" />
+            <TextBlock FontSize="54" Canvas.Left="78" Canvas.Top="0">GSync</TextBlock>
+        </Canvas>
 
         <StackPanel Grid.Row="1">
             <Button Name="btnConfigure" Click="btnConfigure_Click">Configure</Button>

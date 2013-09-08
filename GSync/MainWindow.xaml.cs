@@ -33,7 +33,6 @@ namespace GSync
             InitializeComponent();
 
             outlook = new OutlookReader();
-            lstItems.ItemsSource = outlook.Entries;
 
             google = new GoogleCalendar();
             google.ActiveCalendar = "intrinseca.me.uk_37m9th328t55luubdrqvlf6tdc@group.calendar.google.com";
