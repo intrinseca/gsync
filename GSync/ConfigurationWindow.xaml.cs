@@ -80,14 +80,5 @@ namespace GSync
             DialogResult = true;
             Close();
         }
-
-        private void btnSyncNow(object sender, RoutedEventArgs e)
-        {
-            syncEngine.Sync();
-
-            Stream writeStream = File.OpenWrite(MainWindow.SYNCED_ENTRIES_FILE);
-            syncEngine.SaveSyncedEntries(writeStream);
-            writeStream.Close();
-        }
     }
 }

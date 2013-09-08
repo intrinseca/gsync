@@ -52,5 +52,14 @@ namespace GSync
             conf.Owner = this;
             conf.ShowDialog();
         }
+
+        private void btnSyncNow_Click(object sender, RoutedEventArgs e)
+        {
+            syncEngine.Sync();
+
+            Stream writeStream = File.OpenWrite(MainWindow.SYNCED_ENTRIES_FILE);
+            syncEngine.SaveSyncedEntries(writeStream);
+            writeStream.Close();
+        }
     }
 }

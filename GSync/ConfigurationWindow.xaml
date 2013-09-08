@@ -8,6 +8,10 @@
             <Setter Property="Margin" Value="3" />
             <Setter Property="Height" Value="25" />
         </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="Height" Value="25" />
+        </Style>
     </Window.Resources>
     <Grid Margin="5">
         <Grid.RowDefinitions>
@@ -34,7 +38,7 @@
         </GroupBox>
         
         <GroupBox Header="Syncronisation Options" Grid.Row="1">
-            <Button Click="btnSyncNow">Synchronise Now</Button>
+            <CheckBox IsChecked="True">Enable Synchronisation</CheckBox>
         </GroupBox>
         
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">

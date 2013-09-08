@@ -21,6 +21,7 @@
         </Canvas>
 
         <StackPanel Grid.Row="1">
+            <Button Name="btnSyncNow" Click="btnSyncNow_Click">Synchronise Now</Button>
             <Button Name="btnConfigure" Click="btnConfigure_Click">Configure</Button>
         </StackPanel>
     </Grid>
