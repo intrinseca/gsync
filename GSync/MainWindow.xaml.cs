@@ -47,22 +47,6 @@ namespace GSync
             }
         }
 
-        private void btnRefreshOutlook_Click(object sender, RoutedEventArgs e)
-        {
-            outlook.Refresh();
-
-            foreach (var entry in outlook.Entries)
-            {
-                google.AddEntry(entry);
-            }
-        }
-
-        private void btnCredentials_Click(object sender, RoutedEventArgs e)
-        {
-            lstItems.ItemsSource = google.GetCalendarList();
-            lstItems.DisplayMemberPath = "Summary";
-        }
-
         private void btnConfigure_Click(object sender, RoutedEventArgs e)
         {
             var conf = new ConfigurationWindow(google, syncEngine);

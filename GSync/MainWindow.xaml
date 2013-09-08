@@ -17,8 +17,6 @@
 
         <StackPanel Grid.Row="1">
             <Button Name="btnConfigure" Click="btnConfigure_Click">Configure</Button>
-            <Button Name="btnCredentials" Click="btnCredentials_Click">Update Google Details</Button>
-            <Button Name="btnRefreshOutlook" Click="btnRefreshOutlook_Click">Refresh Outlook</Button>
         </StackPanel>
     </Grid>
 </Window>
