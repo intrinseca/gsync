@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Office.Interop.Outlook;
+using System.Diagnostics;
 
 namespace GSync
 {
+    [Serializable()]
     public class CalendarEntry
     {
         public DateTime Start { get; set; }
@@ -39,6 +41,16 @@ namespace GSync
         public override string ToString()
         {
             return string.Format("{0}: {1} ({2})", Start, Title, Location);
+        }
+
+        public override int GetHashCode()
+        {
+            return UniqueID.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ((CalendarEntry)obj).UniqueID == UniqueID;
         }
     }
 }

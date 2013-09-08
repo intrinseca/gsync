@@ -1,7 +1,7 @@
 ﻿<Window x:Class="GSync.ConfigurationWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Configure GSync" SizeToContent="Height" Width="384" WindowStartupLocation="CenterOwner">
+        Title="Configure GSync" Width="375" Height="400" WindowStartupLocation="CenterOwner" MinHeight="400" MinWidth="375">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Margin" Value="3" />
@@ -27,13 +27,13 @@
                 <Button Name="btnSignIn" Grid.ColumnSpan="2" Height="40" Click="btnSignIn_Click">Sign in with Google</Button>
                 <Button Name="btnSignOut" Grid.ColumnSpan="2" Height="40" Visibility="Collapsed" Click="btnSignOut_Click">Sign out</Button>
                 
-                <Label Margin="0,0,0,81" Grid.Row="1">Select Target Calendar</Label>
+                <Label Grid.Row="1">Select Target Calendar</Label>
                 <ListBox Grid.Row="1" Grid.Column="1" Margin="3" Name="lstCalendars" DisplayMemberPath="Summary" />
             </Grid>
         </GroupBox>
         
         <GroupBox Header="Syncronisation Options" Grid.Row="1">
-            <Button>Synchronise Now</Button>
+            <Button Click="btnSyncNow">Synchronise Now</Button>
         </GroupBox>
         
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">

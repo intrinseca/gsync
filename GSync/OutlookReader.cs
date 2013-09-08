@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace GSync
 {
-    class OutlookReader
+    class OutlookReader : ICalendar
     {
         public ObservableCollection<CalendarEntry> Entries { get; private set; }
 
@@ -28,7 +28,7 @@ namespace GSync
             items.Sort("[Start]");
             items.IncludeRecurrences = true;
 
-            var startDate = DateTime.Today;
+            var startDate = DateTime.Today.AddMonths(-1);
             var endDate = startDate.AddMonths(1);
 
             var currentEvent = items.Find(String.Format("[Start] >= \"{0:D}\" and [Start] <= \"{1:D}\"", startDate, endDate));
@@ -38,6 +38,22 @@ namespace GSync
                 Entries.Add(CalendarEntry.FromOutlook((AppointmentItem)currentEvent));
                 currentEvent = items.FindNext();
             }
+        }
+
+        public bool EntryExists(CalendarEntry entry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddEntry(CalendarEntry newEntry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<CalendarEntry> GetEntries()
+        {
+            Refresh();
+            return Entries.ToList<CalendarEntry>();
         }
     }
 }

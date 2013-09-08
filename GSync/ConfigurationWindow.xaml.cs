@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace GSync
 {
@@ -19,12 +20,14 @@ namespace GSync
     public partial class ConfigurationWindow : Window
     {
         private GoogleCalendar google;
+        private SyncEngine syncEngine;
 
-        public ConfigurationWindow(GoogleCalendar _google)
+        public ConfigurationWindow(GoogleCalendar _google, SyncEngine _syncEngine)
         {
             InitializeComponent();
 
             google = _google;
+            syncEngine = _syncEngine;
 
             checkGoogleStatus();
         }
@@ -76,6 +79,15 @@ namespace GSync
         {
             DialogResult = true;
             Close();
+        }
+
+        private void btnSyncNow(object sender, RoutedEventArgs e)
+        {
+            syncEngine.Sync();
+
+            Stream writeStream = File.OpenWrite(MainWindow.SYNCED_ENTRIES_FILE);
+            syncEngine.SaveSyncedEntries(writeStream);
+            writeStream.Close();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace GSync
             : base(info, context) { }
     }
 
-    public class GoogleCalendar
+    public class GoogleCalendar : ICalendar
     {
         private Func<Uri, string> authFunction;
         private CalendarService service;
@@ -47,6 +47,8 @@ namespace GSync
                 return (auth.State != null);
             }
         }
+
+        public string ActiveCalendar { get; set; }
 
         public GoogleCalendar()
         {
@@ -98,19 +100,24 @@ namespace GSync
             }
         }
 
-        public void AddEvent(CalendarEntry newEntry, string calendarID)
+        public void AddEntry(CalendarEntry newEntry)
         {
             if (!Authenticated)
                 throw new GoogleCalendarException("Not Authenticated");
 
             Event e = new Event();
-            e.Start = new EventDateTime() { DateTime = newEntry.Start.ToUniversalTime().ToString("O"), TimeZone="UTC" };
+            e.Start = new EventDateTime() { DateTime = newEntry.Start.ToUniversalTime().ToString("O"), TimeZone = "UTC" };
             e.End = new EventDateTime() { DateTime = newEntry.End.ToUniversalTime().ToString("O"), TimeZone = "UTC" };
             e.Summary = newEntry.Title;
             e.Description = newEntry.Description + String.Format("\r\nOutlook ID:{0}", newEntry.UniqueID);
             e.Location = newEntry.Location;
 
-            service.Events.Insert(e, calendarID).Execute();
+            service.Events.Insert(e, ActiveCalendar).Execute();
+        }
+
+        public bool EntryExists(CalendarEntry entry)
+        {
+            throw new NotImplementedException();
         }
 
         private IAuthorizationState getAuthorisation(NativeApplicationClient client)
@@ -161,6 +168,12 @@ namespace GSync
         {
             Properties.Settings.Default.RefreshToken = null;
             Properties.Settings.Default.Save();
+        }
+
+
+        public List<CalendarEntry> GetEntries()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DotNetOpenAuth.OAuth2;
 using Google.Apis.Authentication.OAuth2.DotNetOpenAuth;
+using System.IO;
 
 namespace GSync
 {
@@ -23,6 +24,9 @@ namespace GSync
     {
         OutlookReader outlook;
         GoogleCalendar google;
+        SyncEngine syncEngine;
+
+        public const string SYNCED_ENTRIES_FILE = "SyncedEntries.bin";
 
         public MainWindow()
         {
@@ -32,6 +36,15 @@ namespace GSync
             lstItems.ItemsSource = outlook.Entries;
 
             google = new GoogleCalendar();
+            google.ActiveCalendar = "intrinseca.me.uk_37m9th328t55luubdrqvlf6tdc@group.calendar.google.com";
+            syncEngine = new SyncEngine(outlook, google);
+
+            if (File.Exists(SYNCED_ENTRIES_FILE))
+            {
+                Stream loadStream = File.OpenRead(SYNCED_ENTRIES_FILE);
+                syncEngine.LoadSyncedEntries(loadStream);
+                loadStream.Close();
+            }
         }
 
         private void btnRefreshOutlook_Click(object sender, RoutedEventArgs e)
@@ -40,7 +53,7 @@ namespace GSync
 
             foreach (var entry in outlook.Entries)
             {
-                google.AddEvent(entry, "intrinseca.me.uk_37m9th328t55luubdrqvlf6tdc@group.calendar.google.com");
+                google.AddEntry(entry);
             }
         }
 
@@ -52,7 +65,7 @@ namespace GSync
 
         private void btnConfigure_Click(object sender, RoutedEventArgs e)
         {
-            var conf = new ConfigurationWindow(google);
+            var conf = new ConfigurationWindow(google, syncEngine);
             conf.Owner = this;
             conf.ShowDialog();
         }
